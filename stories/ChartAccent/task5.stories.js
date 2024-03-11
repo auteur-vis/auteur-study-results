@@ -13,8 +13,8 @@ export const Task5 = () => {
 
 	const ref = useRef("task5");
 
-	let layout={"width":600,
-	   		   "height":350,
+	let layout={"width":1200,
+	   		   "height":700,
 	   		   "marginTop":50,
 	   		   "marginRight":50,
 	   		   "marginBottom":50,

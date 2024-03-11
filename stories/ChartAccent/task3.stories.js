@@ -15,8 +15,8 @@ export const Task3 = () => {
 
 	const [data, setData] = React.useState(air);
 
-	let layout={"width":650,
-	   		   "height":350,
+	let layout={"width":1200,
+	   		   "height":700,
 	   		   "marginTop":50,
 	   		   "marginRight":100,
 	   		   "marginBottom":50,

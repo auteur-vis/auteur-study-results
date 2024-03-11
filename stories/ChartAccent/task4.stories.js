@@ -25,8 +25,8 @@ export const Task4 = () => {
 		return d
 	}));
 
-	let layout={"width":600,
-	   		   "height":350,
+	let layout={"width":1200,
+	   		   "height":700,
 	   		   "marginTop":50,
 	   		   "marginRight":50,
 	   		   "marginBottom":50,
