@@ -73,6 +73,14 @@ export const Task6 = () => {
 							.attr("r", 3)
 							.attr('fill', "#4d9be3");
 
+		/*
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		*/
+
 	}, [data])
 
 	return (

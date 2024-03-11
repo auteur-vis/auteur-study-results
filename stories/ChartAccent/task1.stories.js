@@ -140,6 +140,14 @@ export const Task1 = () => {
 							.attr("stroke", d => colorScale(d.city))
 							.attr("cursor", "pointer");
 
+		/*
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		*/
+
 	}, [data])
 
 	return (

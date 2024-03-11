@@ -113,6 +113,14 @@ export const Task4 = () => {
 							.attr("opacity", 0.25)
 							.attr('fill', d => colorScale(d.Cylinders));
 
+		/*
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		*/
+
 	}, [data])
 
 	return (

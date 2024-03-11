@@ -79,6 +79,14 @@ export const Task3 = () => {
 								return lineFunction(d)
 							});
 
+		/*
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		*/
+
 	}, [data])
 
 	return (

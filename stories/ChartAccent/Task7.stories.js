@@ -126,7 +126,15 @@ export const Task7 = () => {
 							.attr("x", d => xScale(d.Month) + bandwidth * 2 + padding)
 							.attr("y", d => yScale(d["Seattle"]))
 							.attr("width", bandwidth)
-							.attr("height", d => yScale(0) - yScale(d["Seattle"]))
+							.attr("height", d => yScale(0) - yScale(d["Seattle"]));
+
+		/*
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		*/
 
 	}, [data])
 

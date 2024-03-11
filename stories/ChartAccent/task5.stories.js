@@ -105,6 +105,14 @@ export const Task5 = () => {
 							.attr("r", d => sizeScale(d.Population))
 							.attr('fill', d => colorScale(d.Region));
 
+		/*
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		*/
+
 	}, [data])
 
 	return (

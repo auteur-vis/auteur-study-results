@@ -108,6 +108,14 @@ export const Task2 = () => {
 		svgElement.select("#augs")
 			.attr("transform", `translate(${xScale.bandwidth() / 2}, 0)`);
 
+		/*
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		ADD AUTEUR CODE HERE
+		*/
+
 	}, [data])
 
 	return (
