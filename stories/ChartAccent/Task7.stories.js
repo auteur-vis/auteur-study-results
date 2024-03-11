@@ -105,6 +105,7 @@ export const Task7 = () => {
 							.attr("y", d => yScale(d["NewYork"]))
 							.attr("width", bandwidth)
 							.attr("height", d => yScale(0) - yScale(d["NewYork"]))
+							.attr("opacity", 0.25);
 
 		let CharlotteBars = svgElement.select("#mark")
 							.selectAll(".temperatureCharlotte")
@@ -116,6 +117,7 @@ export const Task7 = () => {
 							.attr("y", d => yScale(d["Charlotte"]))
 							.attr("width", bandwidth)
 							.attr("height", d => yScale(0) - yScale(d["Charlotte"]))
+							.attr("opacity", 0.25);
 
 		let SeattleBars = svgElement.select("#mark")
 							.selectAll(".temperatureSeattle")
@@ -126,7 +128,8 @@ export const Task7 = () => {
 							.attr("x", d => xScale(d.Month) + bandwidth * 2 + padding)
 							.attr("y", d => yScale(d["Seattle"]))
 							.attr("width", bandwidth)
-							.attr("height", d => yScale(0) - yScale(d["Seattle"]));
+							.attr("height", d => yScale(0) - yScale(d["Seattle"]))
+							.attr("opacity", 0.25);
 
 		/*
 		ADD AUTEUR CODE HERE
