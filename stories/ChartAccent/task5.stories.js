@@ -60,7 +60,7 @@ export const Task5 = () => {
 
 		let colorScale = d3.scaleOrdinal()
 							.domain(cities)
-							.range(["#4d9be3", "#9cc957" , "#fa962a"]);
+							.range(["#9cc957", "#fa962a", "#4d9be3"]);
 
 		svgElement.select("#xAxis")
 				  .call(d3.axisBottom(xScale))

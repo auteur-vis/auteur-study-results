@@ -47,11 +47,11 @@ export const Task4 = () => {
 					.domain(d3.extent(data, d => d["Displacement"]))
 					.range([layout.height - layout.marginBottom, layout.marginTop]);
 
-		const cylinders = Array.from(new Set(data.map(d => d.Cylinders)));
+		const cylinders = Array.from(new Set(data.map(d => d.Cylinders))).sort();
 
 		let colorScale = d3.scaleOrdinal()
 							.domain(cylinders)
-							.range(["#4d9be3", "#9cc957" , "#fa962a"]);
+							.range(["#fa962a", "#4d9be3", "#9cc957"]);
 
 		svgElement.select("#xAxis")
 				  .call(d3.axisBottom(xScale))
