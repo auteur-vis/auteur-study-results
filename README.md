@@ -32,7 +32,7 @@ Using the Threshold generation criteria, specify the variable of interest "MPG",
 
 ### Task 2
 
-Take a union of two Emphasis generation criteria; the first emphasis is for the variable "Country" when the value is "Hong Kong, China", "Afghanistan", "Sweden", or "Greece"; the second emphasis is for the variable "Region" when the value is "Sub-Saharan Africa":
+Take a union of two Emphasis generation criteria; the first emphasis is for the variable "Country" when the value is "Hong Kong, China", "Afghanistan", "Sweden", or "Greece"; the second emphasis is for the variable "Region" when the value is "Sub-Saharan Africa"; for each emphasis generation criterion, use the .include() function to define which augmentations are applied; for the "Country" emphasis, include ["stroke", "opacity", "label"]; for the "Region" emphasis, include ["stroke", "opacity"] only:
 
 ![Task2 Screenshot](/screenshots/Task2.png)
 
