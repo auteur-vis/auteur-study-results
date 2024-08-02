@@ -1,17 +1,20 @@
 import React, {useRef, useState, useEffect} from "react";
 import * as d3 from "d3";
+import * as autr from "auteur";
 
 // data from https://www.kaggle.com/datasets/berkeleyearth/climate-change-earth-surface-temperature-data
-import gapminder from "../../public/chartaccent_gapminder.json";
+import cars from "../../public/chartaccent_mpg.json";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
-  title: 'Aug/ChartAccent/Task2',
+  title: 'Aug/P4/Task1',
 };
 
-export const Task2 = () => {
+export const Task1 = () => {
 
-	const ref = useRef("task2");
+	const ref = useRef("Task1");
+
+	const [data, setData] = React.useState(cars);
 
 	let layout={"width":1200,
 	   		   "height":700,
@@ -19,8 +22,6 @@ export const Task2 = () => {
 	   		   "marginRight":50,
 	   		   "marginBottom":50,
 	   		   "marginLeft":50};
-
-	const [data, setData] = useState(gapminder);
 
 	useEffect(() => {
 
@@ -30,28 +31,19 @@ export const Task2 = () => {
 				.attr("height", layout.height);
 
 		let xScale = d3.scaleLinear()
-					.domain([0, d3.max(data, d => d["FertilityRate"])])
+					.domain(d3.extent(data, d => d["MPG"]))
 					.range([layout.marginLeft, layout.width - layout.marginRight]);
 
 		let yScale = d3.scaleLinear()
-					.domain([d3.min(data, d => d["LifeExpectancy"]), 88])
+					.domain(d3.extent(data, d => d["Displacement"]))
 					.range([layout.height - layout.marginBottom, layout.marginTop]);
-
-		let regions = Array.from(new Set(data.map(d => d.Region)));
-
-		let colorScale = d3.scaleOrdinal(d3.schemeSet2)
-							.domain(regions);
-
-		let sizeScale = d3.scaleLinear()
-					.domain(d3.extent(data, d => d["Population"]))
-					.range([3, 20]);							
 
 		svgElement.select("#xAxis")
 				  .call(d3.axisBottom(xScale))
 				  .attr("transform", `translate(0, ${layout.height - layout.marginBottom})`);
 
 		svgElement.select("#xAxis").selectAll("#xTitle")
-				  .data(["Fertility Rate"])
+				  .data(["MPG"])
 				  .join("text")
 				  .attr("id", "xTitle")
 				  .attr("text-anchor", "middle")
@@ -64,7 +56,7 @@ export const Task2 = () => {
 				  .attr("transform", `translate(${layout.marginLeft}, 0)`);
 
 		svgElement.select("#yAxis").selectAll("#yTitle")
-				  .data(["Life Expectancy"])
+				  .data(["Displacement"])
 				  .join("text")
 				  .attr("id", "yTitle")
 				  .attr("text-anchor", "middle")
@@ -72,46 +64,29 @@ export const Task2 = () => {
 				  .attr("fill", "black")
 				  .text(d => d)
 
-		let legend = svgElement.select("#legend")
-							.selectAll(".legendCircle")
-							.data(regions)
-							.join("circle")
-							.attr("class", "legendCircle")
-							.attr("cx", (d, i) => layout.width - 150)
-							.attr("cy", (d, i) => layout.marginTop + 16 * i)
-							.attr("r", 5)
-							.attr("fill", d => colorScale(d))
-
-		let legendText = svgElement.select("#legend")
-							.selectAll(".legendText")
-							.data(regions)
-							.join("text")
-							.attr("class", "legendText")
-							.attr("x", (d, i) => layout.width - 150 + 16)
-							.attr("y", (d, i) => layout.marginTop + 16 * i + 3)
-							.attr("fill", "black")
-							.attr("text-anchor", "start")
-							.attr("font-family", "sans-serif")
-							.attr("font-size", "10")
-							.text(d => d)
-
 		let scatterpoints = svgElement.select("#mark")
-							.selectAll(".scatterpoints")
+							.selectAll(".carPoints")
 							.data(data)
 							.join("circle")
-							.attr("class", d => `scatterpoints`)
-							.attr("cx", d => xScale(d.FertilityRate))
-							.attr("cy", d => yScale(d.LifeExpectancy))
-							.attr("r", d => sizeScale(d.Population))
-							.attr('fill', d => colorScale(d.Region));
+							.attr("class", d => `carPoints ${d.CylindersGroup}`)
+							.attr("cx", d => xScale(d.MPG))
+							.attr("cy", d => yScale(d.Displacement))
+							.attr("r", 3)
+							.attr('fill', "#4d9be3");
 
 		/*
 		ADD AUTEUR CODE HERE
-		ADD AUTEUR CODE HERE
-		ADD AUTEUR CODE HERE
-		ADD AUTEUR CODE HERE
-		ADD AUTEUR CODE HERE
 		*/
+
+		let draft = new autr.Draft();
+		draft
+			.layer(ref.current) // the tutorial example used "#svg" so I was initially confused why couldn't I just pass ref.current. Well it worked fine.
+			.select(".carPoints") // Been sometime I did d3, but I was initially confused whether this should be .select() or .selectAll().
+			.x("MPG", xScale)
+			.y("Displacement", yScale)
+			.exclude({ name: ["regression", "label", "opacity"] }) // I was curious if 'property'/'entity'/'artifact' is a better term than 'name'? Excluding a 'name' is less meaningful.
+			.augment(new autr.Threshold("MPG", "mean", "geq").getAugs()) // Why not getAugmentations()?
+
 
 	}, [data])
 
@@ -121,12 +96,11 @@ export const Task2 = () => {
 				<g id="mark" />
 				<g id="xAxis" />
 				<g id="yAxis" />
-				<g id="legend" />
 			</svg>
 		</div>
 	)
 }
 
-Task2.story = {
-  name: 'Task2',
+Task1.story = {
+  name: 'Task1',
 };

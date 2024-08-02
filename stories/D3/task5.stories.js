@@ -2,28 +2,32 @@ import React, {useRef, useState, useEffect} from "react";
 import * as d3 from "d3";
 
 // data from https://www.kaggle.com/datasets/berkeleyearth/climate-change-earth-surface-temperature-data
-import cars from "../../public/chartaccent_mpg.json";
+import temperature from "../../public/chartaccent_temperature.json";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
-  title: 'Aug/ChartAccent/Task4',
+  title: 'Aug/D3/Task5',
 };
 
-export const Task4 = () => {
+export const Task5 = () => {
 
-	const ref = useRef("task4");
+	const ref = useRef("task5");
 
-	const [data, setData] = React.useState(cars.map(d => {
-		if (d.Cylinders === "7-8 Cyl.") {
-			d.CylindersGroup = "High";
-		} else if (d.Cylinders === "5-6 Cyl.") {
-			d.CylindersGroup = "Mid";
-		} else {
-			d.CylindersGroup = "Low";
-		} 
+	const cities = ["Philadelphia", "Phoenix", "Caquetania"];
+	let flatten = [];
 
-		return d
-	}));
+	for (let c of cities) {
+		flatten = flatten.concat(temperature.map(d => {
+			let newRow = {};
+			newRow.city = c;
+			newRow.temperature = d[c];
+			newRow.month = d.Month;
+
+			return newRow
+		}))
+	}
+
+	const [data, setData] = React.useState(flatten);
 
 	let layout={"width":1200,
 	   		   "height":700,
@@ -36,29 +40,34 @@ export const Task4 = () => {
 
 		let svgElement = d3.select(ref.current);
 
+		let grouped = d3.group(data, d => d.city);
+
+		let flattenGroup = [...grouped].map(d => {
+			return d[1].map(di => {di.city = d[0]; return di});
+			return d[1]
+		});
+
 		svgElement.attr("width", layout.width)
 				.attr("height", layout.height);
 
-		let xScale = d3.scaleLinear()
-					.domain(d3.extent(data, d => d["MPG"]))
+		let xScale = d3.scalePoint()
+					.domain(data.map(d => d["month"]))
 					.range([layout.marginLeft, layout.width - layout.marginRight]);
 
 		let yScale = d3.scaleLinear()
-					.domain(d3.extent(data, d => d["Displacement"]))
+					.domain([0, 100])
 					.range([layout.height - layout.marginBottom, layout.marginTop]);
 
-		const cylinders = Array.from(new Set(data.map(d => d.Cylinders))).sort();
-
 		let colorScale = d3.scaleOrdinal()
-							.domain(cylinders)
-							.range(["#fa962a", "#4d9be3", "#9cc957"]);
+							.domain(cities)
+							.range(["#9cc957", "#fa962a", "#4d9be3"]);
 
 		svgElement.select("#xAxis")
 				  .call(d3.axisBottom(xScale))
 				  .attr("transform", `translate(0, ${layout.height - layout.marginBottom})`);
 
 		svgElement.select("#xAxis").selectAll("#xTitle")
-				  .data(["MPG"])
+				  .data(["Month"])
 				  .join("text")
 				  .attr("id", "xTitle")
 				  .attr("text-anchor", "middle")
@@ -71,7 +80,7 @@ export const Task4 = () => {
 				  .attr("transform", `translate(${layout.marginLeft}, 0)`);
 
 		svgElement.select("#yAxis").selectAll("#yTitle")
-				  .data(["Displacement"])
+				  .data(["Temperature"])
 				  .join("text")
 				  .attr("id", "yTitle")
 				  .attr("text-anchor", "middle")
@@ -79,9 +88,13 @@ export const Task4 = () => {
 				  .attr("fill", "black")
 				  .text(d => d)
 
+		let lineFunction = d3.line()
+							 .x(d => xScale(d["month"]))
+							 .y(d => yScale(d["temperature"]));
+
 		let legend = svgElement.select("#legend")
 							.selectAll(".legendCircle")
-							.data(cylinders)
+							.data(cities)
 							.join("circle")
 							.attr("class", "legendCircle")
 							.attr("cx", (d, i) => layout.width - 100)
@@ -91,7 +104,7 @@ export const Task4 = () => {
 
 		let legendText = svgElement.select("#legend")
 							.selectAll(".legendText")
-							.data(cylinders)
+							.data(cities)
 							.join("text")
 							.attr("class", "legendText")
 							.attr("x", (d, i) => layout.width - 100 + 16)
@@ -102,16 +115,30 @@ export const Task4 = () => {
 							.attr("font-size", "10")
 							.text(d => d)
 
+		let lines = svgElement.select("#mark")
+							.selectAll(".climateLine")
+							.data(flattenGroup)
+							.join("path")
+							.attr("class", "climateLine")
+							.attr('fill', 'none')
+							.attr('stroke-width', 1.5)
+							.attr("stroke", d => colorScale(d[0].city))
+							.attr("d", d => {
+								return lineFunction(d)
+							});
+
 		let scatterpoints = svgElement.select("#mark")
-							.selectAll(".carPoints")
+							.selectAll(".climatePoints")
 							.data(data)
 							.join("circle")
-							.attr("class", d => `carPoints ${d.CylindersGroup}`)
-							.attr("cx", d => xScale(d.MPG))
-							.attr("cy", d => yScale(d.Displacement))
+							.attr("class", "climatePoints")
+							.attr("id", (d, i) => i)
+							.attr("cx", d => xScale(d.month))
+							.attr("cy", d => yScale(d.temperature))
 							.attr("r", 3)
-							.attr("opacity", 0.25)
-							.attr('fill', d => colorScale(d.Cylinders));
+							.attr("fill",  d => colorScale(d.city))
+							.attr("stroke", d => colorScale(d.city))
+							.attr("cursor", "pointer");
 
 		/*
 		ADD AUTEUR CODE HERE
@@ -135,6 +162,6 @@ export const Task4 = () => {
 	)
 }
 
-Task4.story = {
-  name: 'Task4',
+Task5.story = {
+  name: 'Task5',
 };

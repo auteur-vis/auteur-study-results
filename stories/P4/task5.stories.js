@@ -1,17 +1,18 @@
 import React, {useRef, useState, useEffect} from "react";
 import * as d3 from "d3";
+import * as autr from "auteur";
 
 // data from https://www.kaggle.com/datasets/berkeleyearth/climate-change-earth-surface-temperature-data
 import temperature from "../../public/chartaccent_temperature.json";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
-  title: 'Aug/ChartAccent/Task5',
+  title: 'Aug/P4/Task5',
 };
 
 export const Task5 = () => {
 
-	const ref = useRef("task5");
+	const ref = useRef("Task5");
 
 	const cities = ["Philadelphia", "Phoenix", "Caquetania"];
 	let flatten = [];
@@ -142,11 +143,17 @@ export const Task5 = () => {
 
 		/*
 		ADD AUTEUR CODE HERE
-		ADD AUTEUR CODE HERE
-		ADD AUTEUR CODE HERE
-		ADD AUTEUR CODE HERE
-		ADD AUTEUR CODE HERE
 		*/
+		const points = [66.1, 75.1, 78.3, 91.8].map(v => new autr.Emphasis("temperature", v));
+		const union = points[0].union(points.slice(1));
+		const draft = new autr.Draft();
+		draft
+			.layer(ref.current)
+			.select(".climatePoints")
+			.x("month", xScale)
+			.y("temperature", yScale)
+			.include({ name: ["stroke", "label"]})
+			.augment(union);
 
 	}, [data])
 

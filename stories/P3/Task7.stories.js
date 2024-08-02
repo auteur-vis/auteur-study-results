@@ -3,17 +3,19 @@ import * as d3 from "d3";
 
 // data from https://www.kaggle.com/datasets/berkeleyearth/climate-change-earth-surface-temperature-data
 import temperature from "../../public/chartaccent_temperature.json";
+import { Draft, Emphasis, Threshold } from "auteur";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
-  title: 'Aug/ChartAccent/Task6',
+  title: 'Aug/P3/Task7',
 };
 
-export const Task6 = () => {
+export const Task7 = () => {
 
-	const ref = useRef("task6");
+	const ref = useRef("Task7");
 
-	const cities = ["Philadelphia"];
+	const cities = ["NewYork", "Charlotte", "Seattle"];
+
 	const [data, setData] = React.useState(temperature);
 
 	let layout={"width":1200,
@@ -34,14 +36,16 @@ export const Task6 = () => {
 					.domain(data.map(d => d["Month"]))
 					.range([layout.marginLeft, layout.width - layout.marginRight]);
 
+		let padding = 5;
+		let bandwidth = (xScale.bandwidth() - padding * 2) / 3;
+
 		let yScale = d3.scaleLinear()
-					.domain([0, d3.max(data, d => d.Philadelphia)])
+					.domain([0, 100])
 					.range([layout.height - layout.marginBottom, layout.marginTop]);
 
-		let colorScale = d3.scaleOrdinal(d3.schemePastel2)
-							.domain(cities);
-
-		let lineFunctions = {};
+		let colorScale = d3.scaleOrdinal()
+							.domain(cities)
+							.range(["#4d9be3", "#9cc957" , "#fa962a"]);
 
 		svgElement.select("#xAxis")
 				  .call(d3.axisBottom(xScale))
@@ -77,7 +81,7 @@ export const Task6 = () => {
 							.attr("cx", (d, i) => layout.width - 100)
 							.attr("cy", (d, i) => layout.marginTop + 16 * i)
 							.attr("r", 5)
-							.attr("fill", d => colorScale(d))
+							.attr("fill", d => colorScale(d));
 
 		let legendText = svgElement.select("#legend")
 							.selectAll(".legendText")
@@ -90,23 +94,43 @@ export const Task6 = () => {
 							.attr("text-anchor", "start")
 							.attr("font-family", "sans-serif")
 							.attr("font-size", "10")
-							.text(d => d)
+							.text(d => d);
 
-		let firstHalf = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
-
-		let bars = svgElement.select("#mark")
-							.selectAll(".climateBar")
+		let NYBars = svgElement.select("#mark")
+							.selectAll(".temperatureNY")
 							.data(data)
 							.join("rect")
-							.attr("class", d => `climateBar ${firstHalf.indexOf(d.Month) < 0 ? "second" : "first"}`)
-							.attr("x", d => xScale(d["Month"]) + 1)
-							.attr("y", d => yScale(d["Philadelphia"]))
-							.attr("width", xScale.bandwidth() - 2)
-							.attr("height", d => yScale(0) - yScale(d["Philadelphia"]))
-							.attr('fill', '#a9cfd6');
+							.attr("class", "temperatureNY")
+							.attr('fill', d => colorScale("NewYork"))
+							.attr("x", d => xScale(d.Month) + padding)
+							.attr("y", d => yScale(d["NewYork"]))
+							.attr("width", bandwidth)
+							.attr("height", d => yScale(0) - yScale(d["NewYork"]))
+							.attr("opacity", 0.25);
 
-		svgElement.select("#augs")
-			.attr("transform", `translate(${xScale.bandwidth() / 2}, 0)`);
+		let CharlotteBars = svgElement.select("#mark")
+							.selectAll(".temperatureCharlotte")
+							.data(data)
+							.join("rect")
+							.attr("class", "temperatureCharlotte")
+							.attr('fill', d => colorScale("Charlotte"))
+							.attr("x", d => xScale(d.Month) + bandwidth + padding)
+							.attr("y", d => yScale(d["Charlotte"]))
+							.attr("width", bandwidth)
+							.attr("height", d => yScale(0) - yScale(d["Charlotte"]))
+							.attr("opacity", 0.25);
+
+		let SeattleBars = svgElement.select("#mark")
+							.selectAll(".temperatureSeattle")
+							.data(data)
+							.join("rect")
+							.attr("class", "temperatureSeattle")
+							.attr('fill', d => colorScale("Seattle"))
+							.attr("x", d => xScale(d.Month) + bandwidth * 2 + padding)
+							.attr("y", d => yScale(d["Seattle"]))
+							.attr("width", bandwidth)
+							.attr("height", d => yScale(0) - yScale(d["Seattle"]))
+							.attr("opacity", 0.25);
 
 		/*
 		ADD AUTEUR CODE HERE
@@ -116,6 +140,19 @@ export const Task6 = () => {
 		ADD AUTEUR CODE HERE
 		*/
 
+		const threshold = new Threshold("NewYork", "mean", "geq")
+
+		const draft = new Draft()
+
+		draft
+			.layer(ref.current)
+			.select(".temperatureSeattle, .temperatureCharlotte")
+			.x("Month", xScale)
+			.y("NewYork", yScale)
+			.include({ name: ["line", "opacity", "stroke", "text"] })
+			.augment(threshold.getAugs())
+
+
 	}, [data])
 
 	return (
@@ -124,13 +161,12 @@ export const Task6 = () => {
 				<g id="mark" />
 				<g id="xAxis" />
 				<g id="yAxis" />
-				<g id="augs" />
 				<g id="legend" />
 			</svg>
 		</div>
 	)
 }
 
-Task6.story = {
-  name: 'Task6',
+Task7.story = {
+  name: 'Task7',
 };

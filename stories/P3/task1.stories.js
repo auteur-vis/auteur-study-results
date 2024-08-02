@@ -1,24 +1,24 @@
 import React, {useRef, useState, useEffect} from "react";
 import * as d3 from "d3";
-
+import { Draft, Threshold } from "auteur"
 // data from https://www.kaggle.com/datasets/berkeleyearth/climate-change-earth-surface-temperature-data
-import air from "../../public/chartaccent_airquality.json";
+import cars from "../../public/chartaccent_mpg.json";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
-  title: 'Aug/ChartAccent/Task3',
+  title: 'Aug/P3/Task1',
 };
 
-export const Task3 = () => {
+export const Task1 = () => {
 
-	const ref = useRef("task3");
+	const ref = useRef("Task1");
 
-	const [data, setData] = React.useState(air);
+	const [data, setData] = React.useState(cars);
 
 	let layout={"width":1200,
 	   		   "height":700,
 	   		   "marginTop":50,
-	   		   "marginRight":100,
+	   		   "marginRight":50,
 	   		   "marginBottom":50,
 	   		   "marginLeft":50};
 
@@ -29,12 +29,12 @@ export const Task3 = () => {
 		svgElement.attr("width", layout.width)
 				.attr("height", layout.height);
 
-		let xScale = d3.scalePoint()
-					.domain(data.map(d => d["Day"]))
+		let xScale = d3.scaleLinear()
+					.domain(d3.extent(data, d => d["MPG"]))
 					.range([layout.marginLeft, layout.width - layout.marginRight]);
 
 		let yScale = d3.scaleLinear()
-					.domain([0, 450])
+					.domain(d3.extent(data, d => d["Displacement"]))
 					.range([layout.height - layout.marginBottom, layout.marginTop]);
 
 		svgElement.select("#xAxis")
@@ -42,7 +42,7 @@ export const Task3 = () => {
 				  .attr("transform", `translate(0, ${layout.height - layout.marginBottom})`);
 
 		svgElement.select("#xAxis").selectAll("#xTitle")
-				  .data(["Day"])
+				  .data(["MPG"])
 				  .join("text")
 				  .attr("id", "xTitle")
 				  .attr("text-anchor", "middle")
@@ -55,7 +55,7 @@ export const Task3 = () => {
 				  .attr("transform", `translate(${layout.marginLeft}, 0)`);
 
 		svgElement.select("#yAxis").selectAll("#yTitle")
-				  .data(["PM2.5 Index"])
+				  .data(["Displacement"])
 				  .join("text")
 				  .attr("id", "yTitle")
 				  .attr("text-anchor", "middle")
@@ -63,21 +63,15 @@ export const Task3 = () => {
 				  .attr("fill", "black")
 				  .text(d => d)
 
-		let lineFunction = d3.line()
-							 .x(d => xScale(d["Day"]))
-							 .y(d => yScale(d[" PM2_5"]));
-
-		let lines = svgElement.select("#mark")
-							.selectAll(".airLine")
-							.data([data])
-							.join("path")
-							.attr("class", "airLine")
-							.attr('fill', 'none')
-							.attr('stroke-width', 1.5)
-							.attr("stroke", "steelblue")
-							.attr("d", d => {
-								return lineFunction(d)
-							});
+		let scatterpoints = svgElement.select("#mark")
+							.selectAll(".carPoints")
+							.data(data)
+							.join("circle")
+							.attr("class", d => `carPoints ${d.CylindersGroup}`)
+							.attr("cx", d => xScale(d.MPG))
+							.attr("cy", d => yScale(d.Displacement))
+							.attr("r", 3)
+							.attr('fill', "#4d9be3");
 
 		/*
 		ADD AUTEUR CODE HERE
@@ -87,6 +81,17 @@ export const Task3 = () => {
 		ADD AUTEUR CODE HERE
 		*/
 
+		const threshold = new Threshold("MPG", "mean", "geq");
+		const draft = new Draft();
+
+		draft
+			.layer(ref.current)
+			.select(".carPoints")
+			.x("MPG", xScale)
+			.y("Displacement", yScale)
+			.exclude({ name: ["label", "regression", "opacity"] })
+			.augment(threshold.getAugs())
+
 	}, [data])
 
 	return (
@@ -95,12 +100,11 @@ export const Task3 = () => {
 				<g id="mark" />
 				<g id="xAxis" />
 				<g id="yAxis" />
-				<g id="legend" />
 			</svg>
 		</div>
 	)
 }
 
-Task3.story = {
-  name: 'Task3',
+Task1.story = {
+  name: 'Task1',
 };

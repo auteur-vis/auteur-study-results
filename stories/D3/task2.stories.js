@@ -2,20 +2,16 @@ import React, {useRef, useState, useEffect} from "react";
 import * as d3 from "d3";
 
 // data from https://www.kaggle.com/datasets/berkeleyearth/climate-change-earth-surface-temperature-data
-import temperature from "../../public/chartaccent_temperature.json";
+import gapminder from "../../public/chartaccent_gapminder.json";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
-  title: 'Aug/ChartAccent/Task7',
+  title: 'Aug/D3/Task2',
 };
 
-export const Task7 = () => {
+export const Task2 = () => {
 
-	const ref = useRef("task7");
-
-	const cities = ["NewYork", "Charlotte", "Seattle"];
-
-	const [data, setData] = React.useState(temperature);
+	const ref = useRef("task2");
 
 	let layout={"width":1200,
 	   		   "height":700,
@@ -24,6 +20,8 @@ export const Task7 = () => {
 	   		   "marginBottom":50,
 	   		   "marginLeft":50};
 
+	const [data, setData] = useState(gapminder);
+
 	useEffect(() => {
 
 		let svgElement = d3.select(ref.current);
@@ -31,27 +29,29 @@ export const Task7 = () => {
 		svgElement.attr("width", layout.width)
 				.attr("height", layout.height);
 
-		let xScale = d3.scaleBand()
-					.domain(data.map(d => d["Month"]))
+		let xScale = d3.scaleLinear()
+					.domain([0, d3.max(data, d => d["FertilityRate"])])
 					.range([layout.marginLeft, layout.width - layout.marginRight]);
 
-		let padding = 5;
-		let bandwidth = (xScale.bandwidth() - padding * 2) / 3;
-
 		let yScale = d3.scaleLinear()
-					.domain([0, 100])
+					.domain([d3.min(data, d => d["LifeExpectancy"]), 88])
 					.range([layout.height - layout.marginBottom, layout.marginTop]);
 
-		let colorScale = d3.scaleOrdinal()
-							.domain(cities)
-							.range(["#4d9be3", "#9cc957" , "#fa962a"]);
+		let regions = Array.from(new Set(data.map(d => d.Region)));
+
+		let colorScale = d3.scaleOrdinal(d3.schemeSet2)
+							.domain(regions);
+
+		let sizeScale = d3.scaleLinear()
+					.domain(d3.extent(data, d => d["Population"]))
+					.range([3, 20]);							
 
 		svgElement.select("#xAxis")
 				  .call(d3.axisBottom(xScale))
 				  .attr("transform", `translate(0, ${layout.height - layout.marginBottom})`);
 
 		svgElement.select("#xAxis").selectAll("#xTitle")
-				  .data(["Month"])
+				  .data(["Fertility Rate"])
 				  .join("text")
 				  .attr("id", "xTitle")
 				  .attr("text-anchor", "middle")
@@ -64,72 +64,46 @@ export const Task7 = () => {
 				  .attr("transform", `translate(${layout.marginLeft}, 0)`);
 
 		svgElement.select("#yAxis").selectAll("#yTitle")
-				  .data(["Temperature"])
+				  .data(["Life Expectancy"])
 				  .join("text")
 				  .attr("id", "yTitle")
 				  .attr("text-anchor", "middle")
 				  .attr("transform", `translate(0, 40)`)
 				  .attr("fill", "black")
-				  .text(d => d);
+				  .text(d => d)
 
 		let legend = svgElement.select("#legend")
 							.selectAll(".legendCircle")
-							.data(cities)
+							.data(regions)
 							.join("circle")
 							.attr("class", "legendCircle")
-							.attr("cx", (d, i) => layout.width - 100)
+							.attr("cx", (d, i) => layout.width - 150)
 							.attr("cy", (d, i) => layout.marginTop + 16 * i)
 							.attr("r", 5)
-							.attr("fill", d => colorScale(d));
+							.attr("fill", d => colorScale(d))
 
 		let legendText = svgElement.select("#legend")
 							.selectAll(".legendText")
-							.data(cities)
+							.data(regions)
 							.join("text")
 							.attr("class", "legendText")
-							.attr("x", (d, i) => layout.width - 100 + 16)
+							.attr("x", (d, i) => layout.width - 150 + 16)
 							.attr("y", (d, i) => layout.marginTop + 16 * i + 3)
 							.attr("fill", "black")
 							.attr("text-anchor", "start")
 							.attr("font-family", "sans-serif")
 							.attr("font-size", "10")
-							.text(d => d);
+							.text(d => d)
 
-		let NYBars = svgElement.select("#mark")
-							.selectAll(".temperatureNY")
+		let scatterpoints = svgElement.select("#mark")
+							.selectAll(".scatterpoints")
 							.data(data)
-							.join("rect")
-							.attr("class", "temperatureNY")
-							.attr('fill', d => colorScale("NewYork"))
-							.attr("x", d => xScale(d.Month) + padding)
-							.attr("y", d => yScale(d["NewYork"]))
-							.attr("width", bandwidth)
-							.attr("height", d => yScale(0) - yScale(d["NewYork"]))
-							.attr("opacity", 0.25);
-
-		let CharlotteBars = svgElement.select("#mark")
-							.selectAll(".temperatureCharlotte")
-							.data(data)
-							.join("rect")
-							.attr("class", "temperatureCharlotte")
-							.attr('fill', d => colorScale("Charlotte"))
-							.attr("x", d => xScale(d.Month) + bandwidth + padding)
-							.attr("y", d => yScale(d["Charlotte"]))
-							.attr("width", bandwidth)
-							.attr("height", d => yScale(0) - yScale(d["Charlotte"]))
-							.attr("opacity", 0.25);
-
-		let SeattleBars = svgElement.select("#mark")
-							.selectAll(".temperatureSeattle")
-							.data(data)
-							.join("rect")
-							.attr("class", "temperatureSeattle")
-							.attr('fill', d => colorScale("Seattle"))
-							.attr("x", d => xScale(d.Month) + bandwidth * 2 + padding)
-							.attr("y", d => yScale(d["Seattle"]))
-							.attr("width", bandwidth)
-							.attr("height", d => yScale(0) - yScale(d["Seattle"]))
-							.attr("opacity", 0.25);
+							.join("circle")
+							.attr("class", d => `scatterpoints`)
+							.attr("cx", d => xScale(d.FertilityRate))
+							.attr("cy", d => yScale(d.LifeExpectancy))
+							.attr("r", d => sizeScale(d.Population))
+							.attr('fill', d => colorScale(d.Region));
 
 		/*
 		ADD AUTEUR CODE HERE
@@ -153,6 +127,6 @@ export const Task7 = () => {
 	)
 }
 
-Task7.story = {
-  name: 'Task7',
+Task2.story = {
+  name: 'Task2',
 };

@@ -1,17 +1,18 @@
 import React, {useRef, useState, useEffect} from "react";
 import * as d3 from "d3";
+import { Draft, Threshold } from "auteur";
 
 // data from https://www.kaggle.com/datasets/berkeleyearth/climate-change-earth-surface-temperature-data
 import cars from "../../public/chartaccent_mpg.json";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
-  title: 'Aug/ChartAccent/Task1',
+  title: 'Aug/P2/Task1',
 };
 
 export const Task1 = () => {
 
-	const ref = useRef("task1");
+	const ref = useRef("Task1");
 
 	const [data, setData] = React.useState(cars);
 
@@ -80,6 +81,19 @@ export const Task1 = () => {
 		ADD AUTEUR CODE HERE
 		ADD AUTEUR CODE HERE
 		*/
+		const xThreshold = new Threshold("MPG", "mean", "geq");
+		xThreshold.selection(scatterpoints);
+		
+		const augmentations = xThreshold.getAugs();
+		
+		const draft = new Draft();
+		
+		draft.layer(ref.current)
+		  .x("MPG", xScale)
+		  .y("Displacement", yScale)
+		  .exclude({"name":["regression", "label"]})
+		  .augment(augmentations);
+		// 
 
 	}, [data])
 
