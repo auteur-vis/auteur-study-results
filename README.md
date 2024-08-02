@@ -1,3 +1,7 @@
+This branch contains all materials received by participants of our study. For participant responses and study results, please switch to the results branch: https://github.com/auteur-vis/auteur-study-results/tree/results
+
+# Participant Instructions
+
 Thank you for participating in our Auteur user study. Please refer to the following steps to complete the study.
 
 ## Step 1
